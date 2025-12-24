@@ -16,7 +16,7 @@ class WisprLite:
     def __init__(self):
         self.recorder = AudioRecorder()
         self.transcriber = Transcriber()
-        self.postprocessor = TextPostProcessor()  # Ollama LLM cleanup
+        self.postprocessor = TextPostProcessor(enabled=False)  # Ollama LLM cleanup disabled
         self.injector = TextInjector()
         self.indicator = StatusIndicator(self)
         self.is_recording = False
