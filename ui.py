@@ -6,7 +6,7 @@ import rumps
 
 class StatusIndicator(rumps.App):
     def __init__(self, wispr_app):
-        super(StatusIndicator, self).__init__("🎤", quit_button=None)
+        super(StatusIndicator, self).__init__("○", quit_button=None)
         self.wispr_app = wispr_app
         self.menu = [
             "Status: Idle",
@@ -17,9 +17,9 @@ class StatusIndicator(rumps.App):
     def update_status(self, status):
         """Update the status text in menu"""
         status_map = {
-            "idle": ("🎤", "Status: Idle (Cmd+Control to record)"),
-            "recording": ("🔴", "Status: Recording..."),
-            "processing": ("⏳", "Status: Processing...")
+            "idle": ("○", "Status: Idle (Cmd+Control to record)"),
+            "recording": ("●", "Status: Recording..."),
+            "processing": ("◐", "Status: Processing...")
         }
         
         icon, text = status_map.get(status, ("🎤", "Status: Unknown"))
