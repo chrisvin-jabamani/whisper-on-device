@@ -5,10 +5,11 @@ Simple, minimal voice dictation for macOS. Press Cmd+Control to record, speak na
 ## Features
 
 - 🎤 **System-wide**: Works in any app (Slack, Gmail, Cursor, etc.)
-- ⚡ **Fast**: ~1-2s latency on Apple Silicon
+- ⚡ **Fast**: ~0.5-1s on Apple Silicon (MLX), ~2-3s on Intel
 - 🔒 **Private**: Everything runs on-device, no cloud
 - 💯 **Free**: Uses open-source models
 - 🎯 **Simple**: Hold Cmd+Control to record
+- 🧹 **Smart Cleanup**: Optional LLM post-processing via Ollama (removes filler words, fixes grammar)
 
 ## Installation
 
@@ -54,13 +55,53 @@ Click the menu bar icon → Quit
 ## How It Works
 
 ```
-Hold Cmd+Control → Record Audio → Release → Whisper Transcription → Text Injection
+Hold Cmd+Control → Record → Release → Whisper → [Ollama Cleanup] → Text Injection
 ```
 
-- **Faster Whisper**: High-quality speech recognition
+- **MLX Whisper**: Apple Silicon optimized (2-3x faster) - auto-detected
+- **Faster Whisper**: Fallback for Intel Macs
+- **Ollama**: Optional LLM cleanup (auto-detected)
 - **PyAudio**: Microphone capture
 - **pynput**: Keyboard automation
 - **rumps**: Menu bar UI
+
+### Performance
+
+| Mac Type | Backend | Latency |
+|----------|---------|---------|
+| Apple Silicon (M1/M2/M3/M4) | MLX Whisper | ~0.5-1s |
+| Intel Mac | Faster Whisper | ~2-3s |
+
+The backend is automatically selected based on your hardware.
+
+## LLM Cleanup (Optional)
+
+Wispr can use Ollama to clean up transcriptions — removing filler words (um, uh, like), fixing grammar, and adding punctuation.
+
+### Setup
+
+```bash
+# Install Ollama
+brew install ollama
+
+# Pull a fast, small model
+ollama pull llama3.2:1b
+
+# Start Ollama (runs in background)
+ollama serve
+```
+
+### How it works
+
+- If Ollama is running, cleanup is **automatic**
+- If Ollama is not running, raw transcription is used (still works!)
+- No configuration needed — just install and run Ollama
+
+### Example
+
+| Before (raw) | After (cleaned) |
+|--------------|-----------------|
+| "So um I was thinking that uh we should like maybe go to the store" | "I was thinking that we should go to the store." |
 
 ## Configuration
 
@@ -80,6 +121,7 @@ Edit `transcriber.py` to change model size:
 - Grant Accessibility and Input Monitoring permissions in System Settings
 
 **Slow transcription**
+- On Apple Silicon: Ensure MLX Whisper is installed (`pip install mlx-whisper`)
 - Use `tiny` model instead of `base`
 - Check CPU usage
 
@@ -89,7 +131,7 @@ Edit `transcriber.py` to change model size:
 
 ## Future Features
 
-- [ ] LLM cleanup (remove filler words)
+- [x] LLM cleanup (remove filler words) - via Ollama
 - [ ] Custom dictionary
 - [x] Push-to-talk mode
 - [ ] Command mode ("make this friendlier")
@@ -98,7 +140,9 @@ Edit `transcriber.py` to change model size:
 ## Credits
 
 Built with:
-- [Faster Whisper](https://github.com/guillaumekln/faster-whisper)
-- [Whisper.cpp](https://github.com/ggerganov/whisper.cpp)
+- [MLX Whisper](https://github.com/ml-explore/mlx-examples/tree/main/whisper) - Apple Silicon optimized
+- [Faster Whisper](https://github.com/guillaumekln/faster-whisper) - Intel fallback
+- [Ollama](https://ollama.ai) - Local LLM for text cleanup
 - [PyAudio](https://people.csail.mit.edu/hubert/pyaudio/)
 - [pynput](https://github.com/moses-palmer/pynput)
+- [rumps](https://github.com/jaredks/rumps)

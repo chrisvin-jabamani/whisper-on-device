@@ -7,6 +7,7 @@ Press Cmd+Control to start/stop recording
 import threading
 from recorder import AudioRecorder
 from transcriber import Transcriber
+from postprocessor import TextPostProcessor
 from injector import TextInjector
 from hotkeys import HotkeyListener
 from ui import StatusIndicator
@@ -15,6 +16,7 @@ class WisprLite:
     def __init__(self):
         self.recorder = AudioRecorder()
         self.transcriber = Transcriber()
+        self.postprocessor = TextPostProcessor()  # Ollama LLM cleanup
         self.injector = TextInjector()
         self.indicator = StatusIndicator(self)
         self.is_recording = False
@@ -56,6 +58,9 @@ class WisprLite:
             print(f"📝 Transcribed: {text}")
             
             if text:
+                # Clean up with LLM (if Ollama is running)
+                text = self.postprocessor.process(text)
+                
                 # Inject into active application
                 self.injector.inject_text(text)
                 print("✅ Text injected!")

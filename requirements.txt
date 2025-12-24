@@ -1,5 +1,12 @@
+# Core dependencies
 faster-whisper==1.0.3
 pyaudio==0.2.14
 pynput==1.7.7
 pyperclip==1.9.0
 rumps==0.4.0
+requests>=2.28.0
+
+# MLX optimization for Apple Silicon (optional but recommended)
+# Install with: pip install mlx-whisper
+# Only works on M1/M2/M3/M4 Macs - provides 2-3x faster transcription
+mlx-whisper>=0.4.0; platform_machine == "arm64" and sys_platform == "darwin"
